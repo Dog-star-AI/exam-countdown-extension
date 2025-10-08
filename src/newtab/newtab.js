@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
 import { initializeTodoUI } from "./todo-ui.js";
 import { initializeQuickTodoUI } from "./quick-todo-ui.js";
+import { getCustomExams } from "../utils/customExams.js";
 
 let customExamName = "Custom Exam";
 let customExamDate = null;
@@ -423,36 +424,54 @@ async function updateCountdown() {
     }
   }
 
-  switch (currentExam) {
-    case "jee":
-      timeRemaining = getTimeRemaining(jeeExamDate, showSeconds);
-      examName = "JEE Main";
-      break;
-    case "neet":
-      timeRemaining = getTimeRemaining(neetExamDate, showSeconds);
-      examName = "NEET";
-      break;
-    case "jeeAdv":
+  // Check if it's a custom exam from the new system
+  if (currentExam.startsWith("customExam-")) {
+    const examId = currentExam.replace("customExam-", "");
+    const customExams = await getCustomExams();
+    const customExam = customExams.find((e) => e.id === examId);
+    
+    if (customExam) {
+      timeRemaining = getTimeRemaining(new Date(customExam.date), showSeconds);
+      examName = customExam.name;
+    } else {
+      // Exam not found, fall back to JEE Advanced
       timeRemaining = getTimeRemaining(jeeAdvExamDate, showSeconds);
       examName = "JEE Advanced";
-      break;
-    case "custom":
-      if (hasValidCustomExam()) {
-        const customExam = getCustomExamData();
-        timeRemaining = getTimeRemaining(customExam.date, showSeconds);
-        examName = customExam.name;
-      } else {
-        timeRemaining = {
-          total: 0,
-          month: 0,
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        };
-        examName = "Custom Exam";
-      }
-      break;
+      currentExam = "jeeAdv";
+      setActiveExam("jeeAdv");
+    }
+  } else {
+    switch (currentExam) {
+      case "jee":
+        timeRemaining = getTimeRemaining(jeeExamDate, showSeconds);
+        examName = "JEE Main";
+        break;
+      case "neet":
+        timeRemaining = getTimeRemaining(neetExamDate, showSeconds);
+        examName = "NEET";
+        break;
+      case "jeeAdv":
+        timeRemaining = getTimeRemaining(jeeAdvExamDate, showSeconds);
+        examName = "JEE Advanced";
+        break;
+      case "custom":
+        if (hasValidCustomExam()) {
+          const customExam = getCustomExamData();
+          timeRemaining = getTimeRemaining(customExam.date, showSeconds);
+          examName = customExam.name;
+        } else {
+          timeRemaining = {
+            total: 0,
+            month: 0,
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+          };
+          examName = "Custom Exam";
+        }
+        break;
+    }
   }
 
   if (examBadgeElement) {
@@ -524,6 +543,27 @@ async function updateExamDropdownLabels({ customExam }) {
         : "Custom Exam",
   };
 
+  // Get all custom exams
+  const customExams = await getCustomExams();
+
+  // Remove existing custom exam options (except the legacy "custom" option)
+  const existingOptions = Array.from(examSelector.options);
+  existingOptions.forEach((option) => {
+    if (option.value.startsWith("customExam-")) {
+      option.remove();
+    }
+  });
+
+  // Add custom exams to dropdown
+  customExams.forEach((exam) => {
+    const examDate = new Date(exam.date);
+    const option = document.createElement("option");
+    option.value = `customExam-${exam.id}`;
+    option.textContent = `${exam.name} (${format(examDate)})`;
+    examSelector.appendChild(option);
+  });
+
+  // Update labels for predefined exams
   for (const option of examSelector.options) {
     const value = option.value;
     if (labelMap[value]) {
