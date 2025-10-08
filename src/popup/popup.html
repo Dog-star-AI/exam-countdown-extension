@@ -27,7 +27,7 @@
         </button>
       </header>
 
-      <!-- Custom Exam Countdown -->
+      <!-- Custom Exam Countdown (Legacy - for backward compatibility) -->
       <div
         id="custom-exam-section"
         class="card bg-base-100 shadow-md border border-base-300 mb-5 w-full hidden"
@@ -78,6 +78,11 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Dynamic Custom Exams Countdowns Container -->
+      <div id="custom-exams-countdown-container">
+        <!-- Custom exam countdowns will be dynamically inserted here -->
       </div>
 
       <!-- JEE Main Countdown -->
@@ -224,6 +229,96 @@
           </div>
         </div>
       </div>
+
+      <!-- Custom Exams Management Section -->
+      <div
+        class="card bg-base-100 shadow-md border border-base-300 mb-5 w-full"
+      >
+        <div class="card-body p-4">
+          <div class="flex justify-between items-center mb-3">
+            <h2 class="font-bold text-lg">Custom Exams</h2>
+            <button id="add-custom-exam-btn" class="btn btn-primary btn-sm">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"
+                />
+              </svg>
+              Add
+            </button>
+          </div>
+
+          <!-- Custom Exams List Container -->
+          <div id="custom-exams-list" class="space-y-3">
+            <!-- Custom exams will be dynamically inserted here -->
+            <div id="custom-exams-empty-state" class="text-center py-6 opacity-60">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-12 h-12 mx-auto mb-2 opacity-50"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+                />
+              </svg>
+              <p class="text-sm">No custom exams yet</p>
+              <p class="text-xs mt-1 opacity-50">Click "Add" to create your first exam</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add/Edit Custom Exam Modal -->
+      <dialog id="custom-exam-modal" class="modal">
+        <div class="modal-box">
+          <h3 class="font-bold text-lg mb-4" id="custom-exam-modal-title">Add Custom Exam</h3>
+          <form id="custom-exam-form">
+            <div class="form-control mb-3">
+              <label class="label">
+                <span class="label-text">Exam Name</span>
+              </label>
+              <input
+                type="text"
+                id="custom-exam-name-input"
+                placeholder="e.g., SAT, GATE, UPSC"
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text">Exam Date</span>
+              </label>
+              <input
+                type="datetime-local"
+                id="custom-exam-date-input"
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+            <div class="modal-action">
+              <button type="button" class="btn" id="cancel-custom-exam-btn">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="save-custom-exam-btn">Save</button>
+            </div>
+          </form>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
 
       <!-- Todo List Section -->
       <div
